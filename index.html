@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pierced · Gestionale Desktop per Body Piercer | macOS &amp; Windows</title>
+<meta name="description" content="Il software gestionale desktop offline-first per piercer professionisti. Clienti, schede lavoro, controlli di guarigione, compensi studio e sync Google Calendar. 100% locale, zero cloud.">
+<meta name="theme-color" content="#050507">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta property="og:title" content="Pierced · Gestionale Desktop per Body Piercer">
+<meta property="og:description" content="Il software desktop nativo e 100% offline per studi di body piercing. Zero cloud, licenza autonoma per macOS e Windows.">
+<meta property="og:image" content="logo.png">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   PIERCED SHOWCASE · FRAME-BY-FRAME SCROLLYTELLING SYSTEM
+   ========================================================================== */
+:root {
+  --bg: #050507;
+  --win-bg: #0c0d11;
+  --card: #13141a;
+  --card-elev: #181922;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --txt: #f4f4f6;
+  --mut: #a1a1aa;
+  --mut2: #71717a;
+  --accent: #d4af37;
+  --accent-h: #e5c158;
+  --accent-f: #0a0a0a;
+  --accent-s: #fef08a;
+  --accent-rgb: 212, 175, 55;
+  --font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html {
+  font-family: var(--font);
+  background-color: var(--bg);
+  color: var(--txt);
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  overflow-x: hidden;
+  min-height: 100vh;
+  background-color: var(--bg);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-f);
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+/* SVG Icons Utility */
+.ic {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   DYNAMIC BACKGROUND RADIAL GLOW & GRID
+   ========================================================================== */
+.bg-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.glow-rad {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1050px;
+  height: 680px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at center, rgba(var(--accent-rgb), 0.22) 0%, rgba(var(--accent-rgb), 0.06) 50%, transparent 72%);
+  filter: blur(120px);
+  border-radius: 50%;
+  transition: background 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s ease;
+  will-change: transform, background;
+}
+
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.85) 0%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.85) 0%, transparent 80%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   FLOATING CAPSULE NAVBAR
+   ========================================================================== */
+.navbar-wrapper {
+  position: fixed;
+  top: calc(14px + env(safe-area-inset-top, 0px));
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+  padding: 0 16px;
+  pointer-events: none;
+}
+
+.nav-pill {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(14, 15, 20, 0.86);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--line-strong);
+  border-radius: 9999px;
+  padding: 6px 8px 6px 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+}
+
+.brand-logo-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(var(--accent-rgb), 0.35);
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+.brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-link {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mut);
+  border-radius: 9999px;
+  transition: color 0.25s, background 0.25s;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-cta {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-h) 100%);
+  color: var(--accent-f);
+  padding: 7px 16px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.45); }
+
+/* ==========================================================================
+   PROTAGONIST MOCKUP STAGE (DESKTOP PINNING)
+   ========================================================================== */
+.stage-wrap {
+  position: relative;
+  z-index: 2;
+}
+
+.stage-fixed {
+  position: fixed;
+  top: calc(50% + 46px);
+  left: 50%;
+  width: min(1160px, 92vw, calc((100vh - 150px) * 1.703));
+  aspect-ratio: 2940 / 1726;
+  transform: translate(-50%, -50%);
+  perspective: 1500px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.win-3d-root {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.mockup-window {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 
+    0 35px 100px -20px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 25px 50px -15px rgba(var(--accent-rgb), 0.25);
+  background: #0c0d11;
+  pointer-events: auto;
+  transition: box-shadow 0.6s ease;
+}
+
+.frame-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  user-select: none;
+  pointer-events: none;
+  will-change: opacity;
+  image-rendering: auto;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.frame-img.active {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   SCROLLYTELLING CHAPTERS
+   ========================================================================== */
+.chapters-flow {
+  position: relative;
+  z-index: 10;
+}
+
+.chapter-section {
+  min-height: 120vh;
+  display: flex;
+  align-items: center;
+  padding: 0 4vw;
+  pointer-events: none;
+}
+
+.chapter-section.hero-sec {
+  min-height: 100vh;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 100px;
+}
+
+.chapter-section.dual-step {
+  min-height: 200vh;
+}
+
+.chapter-section.pos-left {
+  justify-content: flex-start;
+}
+
+.chapter-section.pos-right {
+  justify-content: flex-end;
+}
+
+.chapter-section.pos-center {
+  justify-content: center;
+  text-align: center;
+}
+
+.chapter-section .copy-card {
+  pointer-events: auto;
+  background: rgba(10, 11, 15, 0.88);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 24px 26px;
+  box-shadow: 
+    0 24px 50px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  width: 350px;
+  max-width: 90vw;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.chapter-section .copy-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.7;
+  transition: background 0.5s ease;
+}
+
+.chapter-section.hero-sec .copy-card {
+  width: 620px;
+  max-width: 92vw;
+  text-align: center;
+  align-items: center;
+  padding: 30px 36px;
+  background: rgba(10, 11, 15, 0.78);
+}
+
+.eyebrow-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.5s ease;
+}
+
+.copy-card h1 {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+
+.copy-card h1 .grad-text {
+  background: linear-gradient(135deg, #fff 30%, var(--accent-s) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.copy-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.copy-card p {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--mut);
+}
+
+.cta-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-h) 100%);
+  color: var(--accent-f);
+  padding: 9px 20px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-align: center;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(var(--accent-rgb), 0.5);
+}
+
+.btn-ghost {
+  border: 1px solid var(--line-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  padding: 9px 18px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  text-align: center;
+}
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.feature-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.f-pill {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  color: #d4d4d8;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.f-pill.active {
+  background: rgba(var(--accent-rgb), 0.12);
+  border-color: rgba(var(--accent-rgb), 0.3);
+  color: var(--accent-s);
+  transition: color 0.5s ease, border-color 0.5s ease, background 0.5s ease;
+}
+
+.mobile-mockup-frame {
+  display: none;
+}
+
+/* ==========================================================================
+   DUAL HARDWARE REVEAL: APPLE MAC & WINDOWS PC
+   ========================================================================== */
+.hardware-section {
+  position: relative;
+  z-index: 20;
+  padding: 140px 20px 100px;
+  background: linear-gradient(180deg, transparent 0%, rgba(5, 5, 7, 0.6) 20%, #050507 50%, #030304 100%);
+}
+
+.hw-container {
+  max-width: 1380px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 40px;
+}
+
+.hw-header {
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.hw-header h2 {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+.hw-header p {
+  font-size: 15px;
+  color: var(--mut);
+  line-height: 1.5;
+}
+
+.laptops-stage {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0 30px;
+  position: relative;
+  overflow: visible;
+}
+
+.laptop-wrap {
+  width: clamp(560px, 48vw, 760px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.mac-laptop {
+  position: relative;
+  z-index: 10;
+  margin-right: -190px;
+}
+
+.mac-laptop .lid {
+  width: 100%;
+  aspect-ratio: 2940 / 1726;
+  height: auto;
+  background: #1e1f24;
+  border: 2px solid #383942;
+  border-radius: 14px 14px 0 0;
+  position: relative;
+  box-shadow: 25px 25px 70px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 6px;
+}
+.mac-laptop .notch {
+  display: none;
+}
+.mac-laptop .screen-inner {
+  flex: 1;
+  background: #0c0d10;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.mac-laptop .screen-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.mac-laptop .base {
+  width: 108%;
+  height: 15px;
+  background: #2b2c34;
+  border-radius: 0 0 14px 14px;
+  box-shadow: 20px 20px 50px rgba(0, 0, 0, 0.9);
+  position: relative;
+}
+.mac-laptop .base::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 4px;
+  background: #1a1b20;
+  border-radius: 0 0 4px 4px;
+}
+
+.pc-laptop {
+  position: relative;
+  z-index: 5;
+  margin-left: 0;
+}
+
+.pc-laptop .lid {
+  width: 100%;
+  aspect-ratio: 1920 / 1020;
+  height: auto;
+  background: #18191f;
+  border: 2px solid #2e303a;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  box-shadow: 15px 20px 55px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 6px;
+}
+.pc-laptop .screen-inner {
+  flex: 1;
+  background: #0c0d10;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.pc-laptop .screen-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.pc-laptop .base {
+  width: 106%;
+  height: 14px;
+  background: #252630;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 15px 15px 40px rgba(0, 0, 0, 0.85);
+}
+
+.laptop-caption {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.os-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: 99px;
+  background: rgba(18, 20, 26, 0.94);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.dot-mac {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.85);
+  flex-shrink: 0;
+}
+
+.dot-win {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.85);
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   FOOTER & LEGAL DISCLOSURES
+   ========================================================================== */
+footer {
+  position: relative;
+  z-index: 20;
+  border-top: 1px solid var(--line);
+  background: #060608;
+  padding: 70px 24px 50px;
+}
+
+.footer-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.footer-brand p {
+  font-size: 13px;
+  color: var(--mut);
+  line-height: 1.6;
+  max-width: 380px;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.footer-col h6 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #fff;
+}
+.footer-col a {
+  font-size: 13px;
+  color: var(--mut);
+  transition: color 0.2s;
+}
+.footer-col a:hover { color: #fff; }
+
+.footer-bottom {
+  max-width: 1100px;
+  margin: 50px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--mut2);
+}
+
+/* ==========================================================================
+   MODALS
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay:target {
+  display: flex;
+}
+
+.modal-box {
+  background: #101116;
+  border: 1px solid var(--line-strong);
+  border-radius: 20px;
+  max-width: 650px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 34px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--mut);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVENESS (PERFETTO PER IPHONE NORMALE 375PX–393PX)
+   ========================================================================== */
+@media (max-width: 900px) {
+  .stage-fixed {
+    display: none;
+  }
+
+  .chapter-section {
+    min-height: auto;
+    padding: 32px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    pointer-events: auto;
+    width: 100%;
+  }
+
+  /* Mostra sempre lo screenshot del Mac prima della descrizione */
+  .chapter-section:not(.hero-sec) {
+    flex-direction: column-reverse;
+  }
+
+  .chapter-section.hero-sec {
+    padding-top: calc(84px + env(safe-area-inset-top, 0px));
+    padding-bottom: 24px;
+  }
+
+  .chapter-section.dual-step {
+    min-height: auto;
+    padding-top: 36px;
+    padding-bottom: 36px;
+  }
+
+  .copy-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 22px 18px !important;
+    border-radius: 18px;
+  }
+
+  .chapter-section.hero-sec .copy-card {
+    padding: 24px 18px !important;
+  }
+
+  .copy-card h1 {
+    font-size: clamp(26px, 7.5vw, 32px) !important;
+  }
+
+  .copy-card h2 {
+    font-size: 19px !important;
+    line-height: 1.25;
+  }
+
+  .copy-card p {
+    font-size: 13px !important;
+    line-height: 1.5;
+  }
+
+  /* Pulsanti comodi in colonna per iPhone normale: zero sovrapposizioni */
+  .cta-group {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .btn-primary, .btn-ghost {
+    width: 100%;
+    padding: 12px 18px;
+    font-size: 14px;
+  }
+
+  /* Pillole proporzionate allo schermo stretto */
+  .feature-pills {
+    justify-content: flex-start;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .f-pill {
+    font-size: 11px;
+    padding: 4px 9px;
+  }
+
+  /* Frame screenshot naturale nativo macOS */
+  .mobile-mockup-frame {
+    display: block;
+    width: 100%;
+    position: relative;
+    background: transparent;
+  }
+
+  .mobile-mockup-frame img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Supporto per la variante a doppia immagine su mobile */
+  .mobile-dual-wrap {
+    position: relative;
+    width: 100%;
+  }
+
+  .mobile-dual-wrap img.mobile-layer-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .mac-laptop {
+    margin-right: -120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-wrapper {
+    top: calc(10px + env(safe-area-inset-top, 0px));
+    padding: 0 10px;
+  }
+
+  .nav-pill {
+    gap: 10px;
+    padding: 5px 8px 5px 10px;
+    width: auto;
+    max-width: calc(100vw - 20px);
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .brand span {
+    font-size: 14px;
+  }
+
+  .nav-cta {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .laptops-stage {
+    flex-direction: column;
+    gap: 40px;
+    padding: 20px 0;
+  }
+
+  .laptop-wrap {
+    width: 100% !important;
+    max-width: 440px;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  .mac-laptop, .pc-laptop {
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  .mac-laptop .lid, .pc-laptop .lid {
+    width: 100%;
+  }
+
+  .mac-laptop .base, .pc-laptop .base {
+    width: 100% !important;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg-glow"><div class="glow-rad" id="dynamicGlow"></div></div>
+<div class="bg-grid"></div>
+
+<!-- Floating Glass Navbar -->
+<header class="navbar-wrapper">
+  <nav class="nav-pill">
+    <a href="#" class="brand">
+      <div class="brand-logo-wrap"><img src="logo.png" alt="Pierced Logo" class="brand-logo"></div>
+      <span>Pierced</span>
+    </a>
+    <div class="nav-links">
+      <a href="#dashboard-ch" class="nav-link active">Dashboard</a>
+      <a href="#calendario-ch" class="nav-link">Calendario</a>
+      <a href="#clienti-ch" class="nav-link">Clienti</a>
+      <a href="#impostazioni-ch" class="nav-link">Aspetto &amp; Colori</a>
+      <a href="#sicurezza-ch" class="nav-link">Sicurezza</a>
+      <a href="#hardware-ch" class="nav-link">macOS &amp; Windows</a>
+    </div>
+    <a href="#m-contatti" class="nav-cta">Richiedi Accesso</a>
+  </nav>
+</header>
+
+<!-- Protagonist Mockup Stage (Desktop Fixed Pinning Originale) -->
+<div class="stage-wrap">
+  <div class="stage-fixed">
+    <div class="win-3d-root" id="mockup3DRoot">
+      
+      <div class="mockup-window" id="appMockupWin">
+        <img src="reference-screens/01-dashboard.png" id="f-dashboard" class="frame-img active" alt="Pierced Mission Control Dashboard">
+        <img src="reference-screens/02-calendario.png" id="f-calendario" class="frame-img" alt="Pierced Calendario e Appuntamenti">
+        <img src="reference-screens/05-scheda clienti.png" id="f-clienti" class="frame-img" alt="Pierced Clienti e Scheda Lavoro">
+        <img src="reference-screens/06-followup.png" id="f-followup" class="frame-img" alt="Pierced Follow-up e Guarigione">
+        <img src="reference-screens/07-studi.png" id="f-studi" class="frame-img" alt="Pierced Studi e Compensi">
+        <img src="reference-screens/08-listino.png" id="f-listino" class="frame-img" alt="Pierced Listino Prezzi">
+        <img src="reference-screens/10 impostazioni aspetto.png" id="f-aspetto-gold" class="frame-img" alt="Pierced Aspetto Oro Caldo">
+        <img src="reference-screens/11 impostazioni aspetto- viola.png" id="f-aspetto-viola" class="frame-img" alt="Pierced Aspetto Viola Ametista">
+        <img src="reference-screens/17-impostazioni blocco.png" id="f-blocco-pin" class="frame-img" alt="Pierced Blocco Studio PIN">
+        <img src="reference-screens/Blocco con touch it.png" id="f-blocco-touch" class="frame-img" alt="Pierced Prompt Biometrico Touch ID">
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Scrollytelling Chapters -->
+<div class="chapters-flow">
+
+  <!-- 00. HERO SECTION -->
+  <section class="chapter-section hero-sec" id="hero-ch" data-frame="dashboard" data-pose="H">
+    <div class="copy-card">
+      <span class="eyebrow-tag">Pierced · Studio Suite</span>
+      <h1>L'eccellenza del piercing <span class="grad-text">ha il suo gestionale.</span></h1>
+      <p>Progettato da un body piercer per i body piercer. Un software personale, rapido e 100% autonomo: anagrafiche, schede lavoro, controlli e compensi multi-studio senza abbonamenti e senza cloud.</p>
+      <div class="cta-group">
+        <a href="#m-contatti" class="btn-primary">Richiedi Accesso</a>
+        <a href="#hardware-ch" class="btn-ghost">macOS &amp; Windows</a>
+      </div>
+      <div class="feature-pills">
+        <span class="f-pill active"><i>●</i> 100% Offline-First</span>
+        <span class="f-pill">Zero Canoni Mensili</span>
+        <span class="f-pill">Database Locale Sicuro</span>
+        <span class="f-pill">Licenza Unica</span>
+      </div>
+    </div>
+    <div class="mobile-mockup-frame">
+      <img src="reference-screens/01-dashboard.png" alt="Pierced Dashboard Preview" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 01. MISSION CONTROL -->
+  <section class="chapter-section pos-left" id="dashboard-ch" data-frame="dashboard" data-pose="DASH">
+    <div class="copy-card">
+      <span class="eyebrow-tag">01 · Mission Control</span>
+      <h2>La tua postazione di comando.</h2>
+      <p>Apri lo studio e hai subito chiarezza operativa: appuntamenti di oggi, piercing eseguiti e follow-up in scadenza. Nessuna cifra o fatturato esposta.</p>
+      <div class="feature-pills">
+        <span class="f-pill active">5 Azioni Rapide</span>
+        <span class="f-pill">Metrica Operativa</span>
+        <span class="f-pill">Privacy al Banco</span>
+      </div>
+    </div>
+    <div class="mobile-mockup-frame">
+      <img src="reference-screens/01-dashboard.png" alt="Mission Control Dashboard" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 02. CALENDARIO -->
+  <section class="chapter-section pos-right" id="calendario-ch" data-frame="calendario" data-pose="CAL">
+    <div class="copy-card">
+      <span class="eyebrow-tag">02 · Calendario &amp; Agenda</span>
+      <h2>La tua agenda di studio, ordinata e flessibile.</h2>
+      <p>Gestisci gli appuntamenti con viste progettate per i ritmi dello studio. Importa in sola lettura i calendari di Google e Apple iCloud, con supporto all'integrazione dei flussi di prenotazione online (Planfy, SimplyBook) per avere ogni seduta sincronizzata senza doppie trascrizioni manuali.</p>
+      <div class="feature-pills">
+        <span class="f-pill active">Viste Giorno / Settimana / Mese</span>
+        <span class="f-pill">Multi-Calendario</span>
+        <span class="f-pill">Sync Google &amp; iCloud</span>
+        <span class="f-pill active">Ready per Booking Online</span>
+      </div>
+    </div>
+    <div class="mobile-mockup-frame">
+      <img src="reference-screens/02-calendario.png" alt="Calendario e Appuntamenti" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 03. CLIENTI -->
+  <section class="chapter-section pos-left" id="clienti-ch" data-frame="clienti" data-pose="CLI">
+    <div class="copy-card">
+      <span class="eyebrow-tag">03 · Clienti &amp; Schede Lavoro</span>
+      <h2>Precisione millimetrica su ogni lavoro.</h2>
+      <p>Materiali, dimensioni e gioielli. L'archivio clinico e i consensi informati di ogni cliente sempre a portata di mano.</p>
+      <div class="feature-pills">
+        <span class="f-pill active">Materiali &amp; Dimensioni</span>
+        <span class="f-pill">Dettagli Gioiello</span>
+        <span class="f-pill">Storico Modifiche</span>
+        <span class="f-pill">Consensi Informati</span>
+      </div>
+    </div>
+    <div class="mobile-mockup-frame">
+      <img src="reference-screens/05-scheda clienti.png" alt="Clienti e Scheda Lavoro" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 04. FOLLOW-UP -->
+  <section class="chapter-section pos-right" id="followup-ch" data-frame="followup" data-pose="FU">
+    <div class="copy-card">
+      <span class="eyebrow-tag">04 · Guarigione &amp; Follow-up</span>
+      <h2>Cura del cliente dopo il piercing.</h2>
+      <p>La guarigione perfetta è il tuo miglior biglietto da visita. Monitora le scadenze, i downsize e invia il promemoria precompilato su WhatsApp con un solo clic.</p>
+      <div class="feature-pills">
+        <span class="f-pill active">Check personalizzabile</span>
+        <span class="f-pill">Downsize gioiello</span>
+        <span class="f-pill">Promemoria WhatsApp</span>
+      </div>
+    </div>
+    <div class="mobile-mockup-frame">
+      <img src="reference-screens/06-followup.png" alt="Guarigione e Follow-up" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 05. STUDI & COMPENSI -->
+  <section class="chapter-section pos-left" id="studi-ch" data-frame="studi" data-pose="STU">
+    <div class="copy-card">
+      <span class="eyebrow-tag">05 · Studi &amp; Compensi</span>
+      <h2>Gestione multi-studio senza attriti.</h2>
+      <p>Che tu lavori come resident o guest, definisci le quote concordate per ogni sede. Compensi netti e quote studio suddivisi automaticamente tra contanti e POS.</p>
+      <div class="feature-pills">
+        <span class="f-pill active">Ripartizione Automatica</span>
+        <span class="f-pill">Resident &amp; Guest</span>
+        <span class="f-pill">Report</span>
+      </div>
+    </div>
+    <div class="mobile-mockup-frame">
+      <img src="reference-screens/07-studi.png" alt="Studi e Compensi" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 06. LISTINO PREZZI -->
+  <section class="chapter-section pos-right" id="listino-ch" data-frame="listino" data-pose="LIS">
+    <div class="copy-card">
+      <span class="eyebrow-tag">06 · Listino Prezzi &amp; Gioielli</span>
+      <h2>Catalogo integrato, zero attese.</h2>
+      <p>Prezzi, servizi e gioielli. Il listino alimenta l'autocompletamento per azzerare i tempi burocratici tra una seduta e l'altra.</p>
+      <div class="feature-pills">
+        <span class="f-pill active">Autocompletamento</span>
+        <span class="f-pill">Catalogo Servizi</span>
+        <span class="f-pill">Listini Dedicati</span>
+      </div>
+    </div>
+    <div class="mobile-mockup-frame">
+      <img src="reference-screens/08-listino.png" alt="Listino Prezzi e Gioielleria" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 07. ASPETTO & COLORI -->
+  <section class="chapter-section dual-step pos-center" id="impostazioni-ch" data-frame="aspetto-dual" data-pose="STATIC">
+    <div class="copy-card" style="width:420px">
+      <span class="eyebrow-tag">07 · Personalizzazione &amp; Temi</span>
+      <h2 id="themeCardTitle">Stile cucito sulla tua identità.</h2>
+      <p id="themeCardDesc">Scegli tra la modalità scura o chiara e personalizza l'atmosfera con raffinati accenti cromatici tra cui Oro Caldo, Viola Ametista e molte altre tonalità coordinate.</p>
+      <div class="feature-pills" style="justify-content:center">
+        <span class="f-pill active" id="activeThemeBadge">Tema Scuro &amp; Chiaro</span>
+        <span class="f-pill" id="themeAccentPill">Oro Caldo · Viola Ametista &amp; Altri</span>
+        <span class="f-pill">Glow Sincronizzato</span>
+      </div>
+    </div>
+    <div class="mobile-mockup-frame">
+      <div class="mobile-dual-wrap">
+        <img src="reference-screens/10 impostazioni aspetto.png" alt="Personalizzazione Oro Caldo" loading="lazy">
+        <img src="reference-screens/11 impostazioni aspetto- viola.png" id="mob-f-aspetto-viola" class="mobile-layer-overlay" alt="Personalizzazione Viola Ametista" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- 08. SICUREZZA -->
+  <section class="chapter-section dual-step pos-center" id="sicurezza-ch" data-frame="sicurezza-dual" data-pose="STATIC">
+    <div class="copy-card" style="width:400px">
+      <span class="eyebrow-tag">08 · Sicurezza</span>
+      <h2 id="secCardTitle">Riservatezza immediata al bancone.</h2>
+      <p id="secCardDesc">Allontanati dalla postazione in totale tranquillità. Blocco istantaneo dello schermo con tastierino numerico PIN o autenticazione biometrica nativa.</p>
+      <div class="feature-pills" style="justify-content:center">
+        <span class="f-pill active" id="activeSecBadge">PIN Hash Locale</span>
+        <span class="f-pill">Touch ID / Hello</span>
+        <span class="f-pill">Dati Protetti</span>
+      </div>
+    </div>
+    <div class="mobile-mockup-frame">
+      <div class="mobile-dual-wrap">
+        <img src="reference-screens/17-impostazioni blocco.png" alt="Blocco Studio PIN" loading="lazy">
+        <img src="reference-screens/Blocco con touch it.png" id="mob-f-touch" class="mobile-layer-overlay" alt="Sicurezza Touch ID" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Hardware Reveal -->
+<section class="hardware-section" id="hardware-ch">
+  <div class="hw-container">
+    <div class="hw-header">
+      <span class="eyebrow-tag">Compatibilità Hardware</span>
+      <h2>Disegnato per macOS.<br>Impeccabile su Windows.</h2>
+      <p>Due architetture autonome, la medesima cura dei dettagli. Nessuna pesante web app racchiusa nel browser: pura velocità desktop sul tuo computer da lavoro preferito.</p>
+    </div>
+
+    <div class="laptops-stage" id="laptopsStage">
+      <div class="laptop-wrap mac-laptop" id="macLaptop">
+        <div class="lid">
+          <div class="screen-inner">
+            <img src="reference-screens/02-calendario.png" alt="Pierced per macOS" class="laptop-screen-img">
+          </div>
+        </div>
+        <div class="base"></div>
+        <div class="laptop-caption">
+          <span class="os-badge-pill"><i class="dot-mac"></i>macOS · Apple Silicon (M1–M4) &amp; Intel</span>
+        </div>
+      </div>
+
+      <div class="laptop-wrap pc-laptop" id="pcLaptop">
+        <div class="lid">
+          <div class="screen-inner">
+            <img src="reference-screens/windows-dashboard.png" alt="Pierced per Windows" class="laptop-screen-img">
+          </div>
+        </div>
+        <div class="base"></div>
+        <div class="laptop-caption">
+          <span class="os-badge-pill"><i class="dot-win"></i>Windows · Windows 11 / 10 (64-bit)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-brand">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="brand-logo-wrap" style="width:32px;height:32px"><img src="logo.png" alt="Pierced Logo" class="brand-logo"></div>
+        <b style="font-size:18px;color:#fff">Pierced</b>
+      </div>
+      <p>La suite gestionale desktop per body piercer professionisti. Riservatezza assoluta, database 100% offline, zero server intermedi.</p>
+      <div style="font-size:12px;color:var(--mut2)">
+        Sviluppato con passione per l'arte e la precisione del body piercing.
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h6>Prodotto</h6>
+      <a href="#dashboard-ch">Mission Control</a>
+      <a href="#calendario-ch">Calendario &amp; Sync</a>
+      <a href="#clienti-ch">Clienti &amp; Schede</a>
+      <a href="#followup-ch">Follow-up Guarigione</a>
+      <a href="#studi-ch">Studi &amp; Compensi</a>
+      <a href="#hardware-ch">macOS &amp; Windows</a>
+    </div>
+
+    <div class="footer-col">
+      <h6>Legale &amp; Privacy</h6>
+      <a href="#m-privacy">Privacy Policy &amp; OAuth</a>
+      <a href="#m-terms">Termini di Servizio</a>
+      <a href="#m-contatti">Richiedi Accesso</a>
+      <a href="#" id="devContactBtn" style="display:inline-flex;align-items:center;gap:6px">
+        <svg class="ic" viewBox="0 0 24 24" width="14" height="14"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        Contatta lo sviluppatore
+      </a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div>&copy; 2026 Pierced Studio Suite. Tutti i diritti riservati.</div>
+    <div>macOS, Apple e iCloud sono marchi di Apple Inc. Windows è un marchio di Microsoft Corp. Google e Google Calendar sono marchi di Google LLC. Planfy e SimplyBook.me sono marchi dei rispettivi proprietari. Tutti i marchi terzi citati appartengono ai legittimi titolari e sono utilizzati unicamente a scopo identificativo per descrivere la compatibilità tecnica del software.</div>
+  </div>
+</footer>
+
+<!-- Modals -->
+<div class="modal-overlay" id="m-privacy">
+  <div class="modal-box" style="max-width: 680px">
+    <button type="button" class="close-btn" onclick="closeModalSafe()">✕</button>
+    
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="eyebrow-tag" style="margin:0">Architettura &amp; Conformità Legale</span>
+    </div>
+
+    <h2 style="font-size:22px;color:#fff;line-height:1.25">Informativa sulla Privacy &amp; Architettura Offline-First</h2>
+    
+    <p style="font-size:13.5px;color:var(--mut);line-height:1.6">
+      Pierced è un'applicazione desktop stand-alone. Non possiede server cloud proprietari né raccoglie dati telemetrici. Tutti i dati anagrafici dei clienti, le note cliniche, i consensi informati e le registrazioni contabili risiedono esclusivamente sul disco locale del computer dell'utente (formato SQLite protetto).
+    </p>
+
+    <div style="border-top:1px solid var(--line);margin:4px 0"></div>
+
+    <h3 id="google-disclosure" style="font-size:16px;color:#fff;letter-spacing:-0.01em">Google Calendar API &amp; Limited Use Disclosure</h3>
+    
+    <p style="font-size:13.5px;color:var(--mut);line-height:1.6">
+      L'applicazione richiede unicamente l'autorizzazione di sola lettura <code>https://www.googleapis.com/auth/calendar.readonly</code> per mostrare gli impegni all'interno dell'agenda dello studio. Pierced non richiede e non possiede permessi di scrittura, modifica o cancellazione dei calendari Google.
+    </p>
+    
+    <p style="font-size:13.5px;color:var(--mut);line-height:1.6">
+      I token di autenticazione OAuth 2.0 vengono conservati in modo cifrato unicamente nel portachiavi nativo del sistema operativo (macOS Keychain o Windows Credential Manager). Nessun dato viene trasferito, sincronizzato su server terzi o venduto a terze parti.
+    </p>
+
+    <p style="font-size:13.5px;color:var(--mut);line-height:1.6">
+      L'accesso può essere revocato in qualunque momento direttamente dall'app (<em>Impostazioni &gt; Disconnetti Google</em>) oppure dalla gestione sicurezza del proprio Account Google.
+    </p>
+
+    <div style="padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid var(--line-strong);border-radius:10px;font-size:12.5px;color:#e4e4e7;line-height:1.55">
+      <strong>Clausola di conformità Google API:</strong><br>
+      L'uso delle informazioni ricevute dalle API di Google rispetta la <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline">Google API Services User Data Policy</a>, inclusi i requisiti di <em>Limited Use</em>.
+      <p style="margin-top:6px;font-size:11.5px;color:#a1a1aa;font-style:italic">
+        "Pierced's use and transfer to any other app of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline">Google API Services User Data Policy</a>, including the Limited Use requirements."
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-terms">
+  <div class="modal-box">
+    <button type="button" class="close-btn" onclick="closeModalSafe()">✕</button>
+    <h2 style="font-size:22px;color:#fff">Termini di Servizio</h2>
+    <p style="font-size:13px;color:var(--mut);line-height:1.6">
+      Il software Pierced è concesso in licenza d'uso stand-alone. L'utente è l'unico ed esclusivo titolare del trattamento dei dati dei propri clienti ai sensi della normativa GDPR.
+    </p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-contatti">
+  <div class="modal-box">
+    <button type="button" class="close-btn" onclick="closeModalSafe()">✕</button>
+    <h2 style="font-size:22px;color:#fff">Richiedi Accesso a Pierced</h2>
+    <p style="font-size:13px;color:var(--mut)">Invia una richiesta per ricevere informazioni sulla licenza o la build dell'eseguibile per il tuo sistema:</p>
+    <form id="accessForm" style="display:flex;flex-direction:column;gap:12px">
+      <input type="text" id="reqName" placeholder="Nome o Studio" required style="padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid var(--line);color:#fff">
+      <input type="email" id="reqEmail" placeholder="Email di contatto" required style="padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid var(--line);color:#fff">
+      <select id="reqPlatform" style="padding:10px 14px;border-radius:8px;background:#14151b;border:1px solid var(--line);color:#fff">
+        <option>Build per macOS (Apple Silicon &amp; Intel)</option>
+        <option>Build per Windows 11 / 10</option>
+        <option>Richiesta Informazioni Generali</option>
+      </select>
+      <button type="submit" class="btn-primary" style="align-self:flex-start;cursor:pointer">Invia Richiesta</button>
+    </form>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     VANILLA JAVASCRIPT: CONTROLLER PERFETTO DESKTOP & MOBILE
+     ========================================================================== -->
+<script>
+(() => {
+  'use strict';
+
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const clamp = (v, min = 0, max = 1) => Math.min(max, Math.max(min, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const smooth = t => t * t * (3 - 2 * t);
+
+  const root = document.documentElement;
+
+  const COLOR_GOLD = { a: '#d4af37', h: '#e5c158', f: '#0a0a0a', s: '#fef08a', rgb: '212, 175, 55' };
+  const COLOR_VIOLA = { a: '#a855f7', h: '#c084fc', f: '#ffffff', s: '#d8b4fe', rgb: '168, 85, 247' };
+
+  function applyColorTheme(c) {
+    root.style.setProperty('--accent', c.a);
+    root.style.setProperty('--accent-h', c.h);
+    root.style.setProperty('--accent-f', c.f);
+    root.style.setProperty('--accent-s', c.s);
+    root.style.setProperty('--accent-rgb', c.rgb);
+  }
+
+  const FRAMES = {
+    dashboard: $('#f-dashboard'),
+    calendario: $('#f-calendario'),
+    clienti: $('#f-clienti'),
+    followup: $('#f-followup'),
+    studi: $('#f-studi'),
+    listino: $('#f-listino'),
+    aspettoGold: $('#f-aspetto-gold'),
+    aspettoViola: $('#f-aspetto-viola'),
+    bloccoPin: $('#f-blocco-pin'),
+    bloccoTouch: $('#f-blocco-touch')
+  };
+
+  const mobViola = $('#mob-f-aspetto-viola');
+  const mobTouch = $('#mob-f-touch');
+
+  function activateFrame(targetId) {
+    Object.keys(FRAMES).forEach(k => {
+      const el = FRAMES[k];
+      if (el) el.classList.toggle('active', k === targetId);
+    });
+  }
+
+  const NAV_MAP = {
+    'hero-ch': '#dashboard-ch',
+    'dashboard-ch': '#dashboard-ch',
+    'calendario-ch': '#calendario-ch',
+    'clienti-ch': '#clienti-ch',
+    'followup-ch': '#clienti-ch',
+    'studi-ch': '#impostazioni-ch',
+    'listino-ch': '#impostazioni-ch',
+    'impostazioni-ch': '#impostazioni-ch',
+    'sicurezza-ch': '#sicurezza-ch',
+    'hardware-ch': '#hardware-ch'
+  };
+
+  const navLinks = $$('.nav-links .nav-link');
+
+  function updateNavbarScrollSpy(activeSectionId) {
+    const targetHref = NAV_MAP[activeSectionId] || '#dashboard-ch';
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === targetHref);
+    });
+  }
+
+  const chapters = $$('.chapter-section');
+  const hwSection = $('#hardware-ch');
+  const stageFixed = $('.stage-fixed');
+  const mockupRoot = $('#mockup3DRoot');
+  const dynamicGlow = $('#dynamicGlow');
+  const macLaptop = $('#macLaptop');
+  const pcLaptop = $('#pcLaptop');
+
+  let vh = window.innerHeight;
+
+  const POSES = {
+    H:      { x: 0,   y: 0 },
+    DASH:   { x: 0,   y: 0 },
+    CAL:    { x: 18,  y: 0 },
+    CLI:    { x: -18, y: 0 },
+    FU:     { x: 16,  y: 0 },
+    STU:    { x: -16, y: 0 },
+    LIS:    { x: 14,  y: 0 },
+    STATIC: { x: 0,   y: 0 }
+  };
+
+  function updateMetrics() {
+    vh = window.innerHeight;
+  }
+  window.addEventListener('resize', updateMetrics);
+
+  let isTicking = false;
+
+  function renderScroll() {
+    isTicking = false;
+    const isMobile = window.innerWidth < 900;
+    const scrollPos = window.scrollY + vh * 0.45;
+
+    let activeSectionId = 'hero-ch';
+
+    if (hwSection) {
+      const hwRect = hwSection.getBoundingClientRect();
+      if (hwRect.top <= vh * 0.5 && hwRect.bottom >= vh * 0.2) {
+        activeSectionId = 'hardware-ch';
+      } else {
+        chapters.forEach(ch => {
+          if (scrollPos >= ch.offsetTop) {
+            activeSectionId = ch.id;
+          }
+        });
+      }
+    } else {
+      chapters.forEach(ch => {
+        if (scrollPos >= ch.offsetTop) {
+          activeSectionId = ch.id;
+        }
+      });
+    }
+
+    updateNavbarScrollSpy(activeSectionId);
+
+    /* ----------------------------------------------------
+       LOGICA DESKTOP ORIGINALE (RESTABILITA AL 100%)
+       ---------------------------------------------------- */
+    if (!isMobile && mockupRoot) {
+      let activeIndex = 0;
+      chapters.forEach((ch, idx) => {
+        if (scrollPos >= ch.offsetTop) {
+          activeIndex = idx;
+        }
+      });
+
+      const currentChapter = chapters[activeIndex];
+      const nextChapter = chapters[Math.min(chapters.length - 1, activeIndex + 1)];
+
+      const currentPoseKey = currentChapter.dataset.pose || 'STATIC';
+      const nextPoseKey = nextChapter.dataset.pose || currentPoseKey;
+
+      const p1 = POSES[currentPoseKey] || POSES.STATIC;
+      const p2 = POSES[nextPoseKey] || p1;
+
+      const progress = clamp((scrollPos - currentChapter.offsetTop) / currentChapter.offsetHeight);
+      const ease = smooth(progress);
+
+      const curX = lerp(p1.x, p2.x, ease);
+      const curY = lerp(p1.y, p2.y, ease);
+
+      mockupRoot.style.transform = `translate3d(${curX.toFixed(1)}px, ${curY.toFixed(1)}px, 0)`;
+
+      if (dynamicGlow) {
+        dynamicGlow.style.transform = `translate3d(calc(-50% + ${curX * 1.5}px), calc(-50% + ${curY * 1.5}px), 0)`;
+      }
+
+      const frameMode = currentChapter.dataset.frame;
+
+      if (frameMode === 'aspetto-dual') {
+        const subProgress = clamp((scrollPos - currentChapter.offsetTop) / currentChapter.offsetHeight);
+        if (subProgress < 0.48) {
+          activateFrame('aspettoGold');
+          applyColorTheme(COLOR_GOLD);
+          const b1 = $('#themeAccentPill'); if (b1) b1.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+        } else {
+          activateFrame('aspettoViola');
+          applyColorTheme(COLOR_VIOLA);
+          const b2 = $('#themeAccentPill'); if (b2) b2.style.borderColor = 'rgba(168, 85, 247, 0.4)';
+        }
+      } else if (frameMode === 'sicurezza-dual') {
+        const subProgress = clamp((scrollPos - currentChapter.offsetTop) / currentChapter.offsetHeight);
+        if (subProgress < 0.48) {
+          activateFrame('bloccoPin');
+          const sb1 = $('#activeSecBadge'); if (sb1) sb1.textContent = 'PIN Hash Locale';
+        } else {
+          activateFrame('bloccoTouch');
+          const sb2 = $('#activeSecBadge'); if (sb2) sb2.textContent = 'Touch ID / Hello';
+        }
+      } else if (frameMode) {
+        activateFrame(frameMode);
+        applyColorTheme(COLOR_GOLD);
+      }
+
+      if (stageFixed && hwSection) {
+        const hwRect = hwSection.getBoundingClientRect();
+        if (hwRect.top < vh * 1.05) {
+          const fadeProgress = clamp((vh * 0.95 - hwRect.top) / (vh * 0.65));
+          const blurVal = lerp(0, 28, fadeProgress);
+          const opacityVal = clamp(1 - fadeProgress * 1.35);
+          stageFixed.style.filter = `blur(${blurVal.toFixed(1)}px)`;
+          stageFixed.style.opacity = opacityVal.toFixed(2);
+          stageFixed.style.pointerEvents = opacityVal <= 0.05 ? 'none' : 'auto';
+          if (opacityVal <= 0.05) {
+            Object.keys(FRAMES).forEach(k => {
+              if (FRAMES[k]) FRAMES[k].classList.remove('active');
+            });
+          }
+        } else {
+          stageFixed.style.filter = 'none';
+          stageFixed.style.opacity = 1;
+          stageFixed.style.pointerEvents = 'auto';
+        }
+      }
+    }
+
+    /* ----------------------------------------------------
+       LOGICA MOBILE: DISSOLVENZE PULITE SU IPHONE
+       ---------------------------------------------------- */
+    if (isMobile) {
+      const aspSec = $('#impostazioni-ch');
+      if (aspSec) {
+        const rect = aspSec.getBoundingClientRect();
+        if (rect.top <= vh * 0.4) {
+          applyColorTheme(COLOR_VIOLA);
+          if (mobViola) mobViola.style.opacity = '1';
+        } else {
+          applyColorTheme(COLOR_GOLD);
+          if (mobViola) mobViola.style.opacity = '0';
+        }
+      }
+
+      const secSec = $('#sicurezza-ch');
+      if (secSec) {
+        const rect = secSec.getBoundingClientRect();
+        if (rect.top <= vh * 0.4) {
+          if (mobTouch) mobTouch.style.opacity = '1';
+          const sb2 = $('#activeSecBadge'); if (sb2) sb2.textContent = 'Touch ID / Hello';
+        } else {
+          if (mobTouch) mobTouch.style.opacity = '0';
+          const sb1 = $('#activeSecBadge'); if (sb1) sb1.textContent = 'PIN Hash Locale';
+        }
+      }
+    }
+
+    /* --- ANIMAZIONE LAPTOP SEZIONE HARDWARE --- */
+    if (hwSection && macLaptop && pcLaptop) {
+      if (window.innerWidth <= 768) {
+        macLaptop.style.transform = 'none';
+        pcLaptop.style.transform = 'none';
+      } else {
+        const hwRect = hwSection.getBoundingClientRect();
+        if (hwRect.top < vh && hwRect.bottom > 0) {
+          const hwProgress = smooth(clamp(1 - hwRect.top / (vh * 0.85)));
+          const macX = lerp(-80, 0, hwProgress);
+          const pcX = lerp(80, 0, hwProgress);
+          const pcY = lerp(36, 20, hwProgress);
+          const pcScale = lerp(0.95, 0.97, hwProgress);
+
+          macLaptop.style.transform = `translate3d(${macX.toFixed(1)}px, 0, 0)`;
+          pcLaptop.style.transform = `translate3d(${pcX.toFixed(1)}px, ${pcY.toFixed(1)}px, 0) scale(${pcScale.toFixed(3)})`;
+        }
+      }
+    }
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!isTicking) {
+      requestAnimationFrame(renderScroll);
+      isTicking = true;
+    }
+  }, { passive: true });
+
+  /* Chiusura modali sicura con riposizionamento dello scroll */
+  window.closeModalSafe = function() {
+    const y = window.scrollY;
+    location.hash = '_';
+    window.scrollTo({ top: y, behavior: 'instant' });
+    history.replaceState('', document.title, window.location.pathname + window.location.search);
+  };
+
+  $$('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) {
+        window.closeModalSafe();
+      }
+    });
+  });
+
+  window.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      window.closeModalSafe();
+    }
+  });
+
+  function getTargetEmail() {
+    const user = 'nikto.piercer';
+    const domain = 'gmail.com';
+    return user + '@' + domain;
+  }
+
+  const devContactBtn = document.getElementById('devContactBtn');
+  if (devContactBtn) {
+    devContactBtn.addEventListener('click', e => {
+      e.preventDefault();
+      const mailto = 'mailto:' + getTargetEmail() + '?subject=' + encodeURIComponent('Richiesta Informazioni Pierced');
+      window.location.href = mailto;
+    });
+  }
+
+  const accessForm = document.getElementById('accessForm');
+  if (accessForm) {
+    accessForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('reqName').value.trim();
+      const email = document.getElementById('reqEmail').value.trim();
+      const platform = document.getElementById('reqPlatform').value;
+
+      const subject = 'Richiesta Accesso Pierced · ' + name;
+      const body = 
+        'Ciao,\n\n' +
+        'Vorrei richiedere l\'accesso a Pierced per il mio studio:\n\n' +
+        '• Nome / Studio: ' + name + '\n' +
+        '• Email di riferimento: ' + email + '\n' +
+        '• Piattaforma richiesta: ' + platform + '\n\n' +
+        'Resto in attesa delle informazioni per la licenza e il download della build.\nGrazie!';
+
+      const mailtoLink = 'mailto:' + getTargetEmail() +
+        '?subject=' + encodeURIComponent(subject) +
+        '&body=' + encodeURIComponent(body);
+
+      window.location.href = mailtoLink;
+
+      window.closeModalSafe();
+      accessForm.reset();
+    });
+  }
+
+  renderScroll();
+})();
+</script>
+
+</body>
+</html>
